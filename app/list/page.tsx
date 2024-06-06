@@ -1,19 +1,30 @@
 import Link from "next/link";
+import { sql } from "@vercel/postgres";
+import Search from "./ui/search";
+import Table from "./ui/table";
+import { Suspense } from "react";
+import Pagination from "./ui/pagination";
+import { fetchTotalPages } from "./lib/data";
 
-export default function Page() {
-  const arrayList = [1, 2, 3, 4];
-
-  const list = arrayList.map((item) => (
-    <li key={item}>
-      <Link className="cursor-pointer hover:underline" href={`/list/${item}`}>
-        Ссылка №{item}
-      </Link>
-    </li>
-  ));
+export default async function Page({
+  searchParams,
+}: {
+  searchParams?: {
+    query?: string;
+    page?: string;
+  };
+}) {
+  const query = searchParams?.query || "";
+  const currentPage = Number(searchParams?.page) || 1;
+  const totalPages = await fetchTotalPages(query);
 
   return (
     <main className="flex flex-col items-center p-24">
-      <ul>{list}</ul>
+      <Search />
+      <Suspense key={query + currentPage} fallback={<div>Loading...</div>}>
+        <Table query={query} currentPage={currentPage} />
+      </Suspense>
+      <Pagination pages={totalPages} />
     </main>
   );
 }
