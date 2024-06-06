@@ -8,7 +8,7 @@ export default async function Table({
   query: string;
   currentPage: number;
 }) {
-  const itemPerPage = 2;
+  const itemPerPage = 5;
 
   const data: any = await sql`
       SELECT * FROM example_table WHERE name ILIKE ${`%${query}%`} LIMIT ${itemPerPage} OFFSET ${
